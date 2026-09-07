@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftShip Logistics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="logo">SwiftShip</div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#tracking">Track Shipment</a>
+        <a href="#shipping">Ship With Us</a>
+    </nav>
+</header>
+
+<section id="home" class="hero">
+    <h1>Fast. Reliable. Worldwide.</h1>
+    <p>Your trusted partner for safe and reliable shipping.</p>
+    <a href="#tracking" class="button">Track Your Shipment</a>
+</section>
+
+<section id="tracking" class="section">
+    <h2>Track Your Shipment</h2>
+    <p>Enter your tracking number below.</p>
+    <input type="text" id="trackingNumber" placeholder="Example: SWIFT1001">
+    <button onclick="trackShipment()">Track</button>
+    <div id="trackingResult"></div>
+</section>
+
+<section id="shipping" class="section">
+    <h2>Ship With SwiftShip</h2>
+    <form id="shippingForm">
+        <input type="text" id="customer" placeholder="Your Name" required>
+        <input type="text" id="destination" placeholder="Destination" required>
+        <button type="submit">Create Shipment</button>
+    </form>
+    <div id="shipmentResult"></div>
+</section>
+
+<footer>
+    <p>© 2026 SwiftShip Logistics. All rights reserved.</p>
+</footer>
+
+<script>
+async function trackShipment() {
+    const trackingNumber = document.getElementById("trackingNumber").value;
+    const result = document.getElementById("trackingResult");
+
+    if (!trackingNumber) {
+        result.innerHTML = "<p>Please enter a tracking number.</p>";
+        return;
+    }
+
+    const response = await fetch(`/api/shipments/${trackingNumber}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+        result.innerHTML = `<p>${data.message}</p>`;
+        return;
+    }
+
+    result.innerHTML = `
+        <div class="shipment-card">
+            <h3>Shipment Found</h3>
+            <p><strong>Tracking:</strong> ${data.trackingNumber}</p>
+            <p><strong>Customer:</strong> ${data.customer}</p>
+            <p><strong>Destination:</strong> ${data.destination}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+        </div>
+    `;
+}
+
+document.getElementById("shippingForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const customer = document.getElementById("customer").value;
+    const destination = document.getElementById("destination").value;
+
+    const response = await fetch("/api/shipments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer, destination })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("shipmentResult").innerHTML = `
+        <div class="shipment-card">
+            <h3>Shipment Created!</h3>
+            <p><strong>Tracking Number:</strong> ${data.trackingNumber}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+        </div>
+    `;
+});
+</script>
+</body>
+</html>

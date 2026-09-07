@@ -1,0 +1,13 @@
+{
+  "name": "swiftship-logistics",
+  "version": "1.0.0",
+  "description": "Simple Node.js shipping company application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
